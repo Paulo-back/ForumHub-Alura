@@ -3,7 +3,7 @@ package br.com.paulo.ForumHub.Domain.Usuario;
 import br.com.paulo.ForumHub.Domain.Respostas.Respostas;
 import br.com.paulo.ForumHub.Domain.Topicos.Topicos;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
+//import jakarta.validation.Valid;
 import lombok.*;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class Usuario {
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    private TipoPerfil perfil;
+    private TipoPerfil tipo_perfil;
 
     @OneToMany(mappedBy = "autor")
     private List<Topicos> topicos;
@@ -39,16 +39,8 @@ public class Usuario {
         this.nome = dados.nome();
         this.email = dados.email();
         this.senha = dados.senha();
-        this.perfil = dados.perfil();
+        this.tipo_perfil = dados.perfil();
 
     }
-//    public Medico(DadosCadastroMedico dados) {
-//        this.ativo = true;
-//        this.nome = dados.nome();
-//        this.crm = dados.crm();
-//        this.email = dados.email();
-//        this.telefone = dados.telefone();
-//        this.endereco = new Endereco(dados.endereco());
-//        this.especialidade = dados.especialidade();
-//    }
+
 }

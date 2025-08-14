@@ -19,9 +19,18 @@ public class Curso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    @Enumerated(EnumType.STRING)
-    private Categoria categoria;
+    private String descricao;
+    private int carga_horaria;
+    private String nivel;
+
 
     @OneToMany(mappedBy = "curso")
     private List<Topicos> topicos;
+
+    public Curso(DadosCadastroCurso dados) {
+        this.nome = dados.nome();
+        this.descricao = dados.descricao();
+        this.carga_horaria = dados.carga_horaria();
+        this.nivel = dados.nivel();
+    }
 }

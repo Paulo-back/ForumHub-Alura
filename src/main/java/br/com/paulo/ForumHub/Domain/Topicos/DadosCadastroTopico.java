@@ -1,14 +1,22 @@
 package br.com.paulo.ForumHub.Domain.Topicos;
 
 import br.com.paulo.ForumHub.Domain.Curso.Curso;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
 
 public record DadosCadastroTopico(
 
-          String titulo,
+        @NotBlank
+        String titulo,
+
+         @NotBlank
          String mensagem,
+
+          @NotNull
           Long autor_id,
+
+          @NotNull
           Long curso_id
 
 ) {

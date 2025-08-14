@@ -17,11 +17,15 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 public class Topicos {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
-    private String Mensagem;
-    private LocalDateTime datacriacao = LocalDateTime.now();
-    private Boolean resolvido;
+    private String mensagem;
+    private LocalDateTime data_criacao = LocalDateTime.now();
+    @Column(name = "status", nullable = false)
+    private Boolean status;
 
     @ManyToOne
     @JoinColumn(name = "autor_id")
@@ -31,14 +35,18 @@ public class Topicos {
     @JoinColumn(name = "curso_id")
     private Curso curso;
 
-    @OneToMany(mappedBy = "topico")
+    @OneToMany(mappedBy = "topico", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Respostas> resposta;
 
     public Topicos(DadosCadastroTopico dados, Usuario autor, Curso curso) {
         this.titulo = dados.titulo();
-        this.Mensagem = dados.mensagem();
+        this.mensagem = dados.mensagem();
         this.autor = autor;
         this.curso = curso;
-        this.resolvido = false;
+        this.status = false;
+    }
+
+    public void atualizarStatus() {
+        this.status = true;
     }
 }

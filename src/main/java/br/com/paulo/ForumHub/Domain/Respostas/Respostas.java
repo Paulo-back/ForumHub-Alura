@@ -3,7 +3,7 @@ package br.com.paulo.ForumHub.Domain.Respostas;
 import br.com.paulo.ForumHub.Domain.Topicos.Topicos;
 import br.com.paulo.ForumHub.Domain.Usuario.Usuario;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
+
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -28,7 +28,8 @@ public class Respostas {
     @JoinColumn(name = "topico_id")
     private Topicos topico;
 
-    private LocalDateTime dtCriacao;
+    @Column(name = "data_criacao", nullable = false)
+    private LocalDateTime dtCriacao = LocalDateTime.now();;
     private Boolean solucao = false;
 
     @ManyToOne
