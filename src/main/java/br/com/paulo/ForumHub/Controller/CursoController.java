@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 @RestController
@@ -23,13 +24,14 @@ public class CursoController {
 
     @RequestMapping("/cadastro")
     @Transactional
-    public ResponseEntity cadastroLivro(@RequestBody @Valid DadosCadastroCurso dados){
+    public ResponseEntity cadastroCurso(@RequestBody @Valid DadosCadastroCurso dados, UriComponentsBuilder uriBuild){
         var curso = new Curso(dados);
         repository.save(curso);
-        return ResponseEntity.ok("Livro cadastrado Com Sucesso!");
-
+        var uri = uriBuild.path("/curso/{id}").buildAndExpand(curso.getId()).toUri();
+        return ResponseEntity.created(uri).body(new DadosDetalhamentoCurso(curso));
 
     }
+
 
     @GetMapping("/listar")
     public ResponseEntity<Page<DadosDetalhamentoCurso>> listar(Pageable pageable){

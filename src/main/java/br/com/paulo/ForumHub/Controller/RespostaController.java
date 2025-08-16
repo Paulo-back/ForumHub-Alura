@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("respostas")
@@ -30,7 +31,7 @@ public class RespostaController {
 
     @PostMapping("/cadastrar")
     @Transactional
-    public ResponseEntity<DadosCadastroResposta> cadastrarResposta(@RequestBody @Valid DadosCadastroResposta dados) {
+    public ResponseEntity cadastrarResposta(@RequestBody @Valid DadosCadastroResposta dados, UriComponentsBuilder uriBuild) {
 
         Usuario autor = usuarioRepository.findById(dados.usuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -41,8 +42,9 @@ public class RespostaController {
         Respostas resposta = new Respostas(dados, autor, topico);
 
         respostasRepository.save(resposta);
-        System.out.println("Resposta salva para o tópico: " + topico.getTitulo());
-        return ResponseEntity.ok().build();
+//        System.out.println("Resposta salva para o tópico: " + topico.getTitulo());
+        var uri = uriBuild.path("/respostas/{id}").buildAndExpand(resposta.getId()).toUri();
+        return ResponseEntity.created(uri).body(new DadosDetalhamentoResposta(resposta));
 
 
     }
@@ -58,5 +60,17 @@ public class RespostaController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(new DadosDetalhamentoResposta(respotas.get()));
+    }
+    @DeleteMapping("/delete/{id}")
+    @Transactional
+    public ResponseEntity excluirResposta(@PathVariable Long id){
+        var respostas = respostasRepository.findById(id);
+        if (respostas.isPresent()){
+            respostasRepository.deleteById(id);
+            return ResponseEntity.ok("Exclusão feita com sucesso!");
+        }else {
+            return ResponseEntity.badRequest().body("Id do tópico não existe!");
+        }
+
     }
 }

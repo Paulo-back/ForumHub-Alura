@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -27,17 +28,24 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/cadastro")
     @Transactional
     //ResponseEntity depois
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastro dados){
-//        System.out.println("Dados Recebidos:\n" + dados);
-        var usuario = new Usuario(dados);
-        System.out.println("usuario: " + usuario);
+    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastro dados, UriComponentsBuilder uriBuild){
+//        System.out.println("usuario: " + usuario);
+        String senhaCriptografada = passwordEncoder.encode(dados.senha());
+        var usuario = new Usuario(dados,senhaCriptografada);
+
         repository.save(usuario);
+        var uri = uriBuild.path("/pacientes/{id}").buildAndExpand(usuario.getId()).toUri();
         return ResponseEntity.ok("cadastro efetuado");
 
     }
+
+
     @GetMapping("/listar")
     public ResponseEntity<Page<DadosListagemUsuario>> listarUsuarios(Pageable page){
          Page<DadosListagemUsuario> usuarios = repository.findAll(page).map(DadosListagemUsuario::new);

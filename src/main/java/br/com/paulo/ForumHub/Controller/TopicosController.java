@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("topicos")
@@ -27,7 +28,7 @@ public class TopicosController {
 
     @RequestMapping("/cadastro")
     @Transactional
-    public ResponseEntity cadastrarTopico(@RequestBody @Valid DadosCadastroTopico dados){
+    public ResponseEntity cadastrarTopico(@RequestBody @Valid DadosCadastroTopico dados,UriComponentsBuilder uriBuilder){
         Usuario autor = usuarioRepository.findById(dados.autor_id())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -41,16 +42,17 @@ public class TopicosController {
         Topicos topico = new Topicos(dados, autor, curso);
 
         repository.save(topico);
-        return  ResponseEntity.ok("Tópico salvo com sucesso!");
+        var uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+        return  ResponseEntity.created(uri).body(new DadosDetalhamentoTopico(topico));
 
-//        System.out.println("Tópico salvo: " + topico.getTitulo());
 
     }
+
+
     @GetMapping("/listar")
     public ResponseEntity<Page<DadosDetalhamentoTopico>> listar(Pageable pageable){
-//        var topicos = repository.findAll(pageable).map(DadosDetalhamentoTopico::new);
-        var topi = repository.findAllByStatusFalse(pageable).map(DadosDetalhamentoTopico::new);
-        return ResponseEntity.ok(topi);
+        var topicos = repository.findAllByStatusFalse(pageable).map(DadosDetalhamentoTopico::new);
+        return ResponseEntity.ok(topicos);
     }
     @GetMapping("/listar/{id}")
     public ResponseEntity<DadosDetalhamentoTopico> listarPorId(@PathVariable Long id){

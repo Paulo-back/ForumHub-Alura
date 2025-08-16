@@ -1,6 +1,5 @@
 package br.com.paulo.ForumHub.Domain.Curso;
 
-import br.com.paulo.ForumHub.Domain.Respostas.Respostas;
 
 public record DadosDetalhamentoCurso(
         String nome,
